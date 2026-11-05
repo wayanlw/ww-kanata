@@ -1,0 +1,139 @@
+;; ============================================================================
+;;  capsy.kbd - Kanata port of ClaudeCapsy_NoMouse.ahk (core pass)
+;;  Run:  kanata_windows_gui_winIOv2_x64.exe --cfg D:\Projects\kanata\Kanata\capsy.kbd
+;;  Emergency exit: hold LCtrl + Space + Esc (physical keys).
+;;  Hold CapsLock = nav layer.
+;;  Excel-only AHK hotkeys are not ported (excluded by design).
+;;  Not ported yet: CapsLock+T/G/A multi-press (tap only for now),
+;;  CapsLock+A double-press save-as, CapsLock+W launcher,
+;;  CapsLock+Home/End line duplication, Win+Space, CapsLock+F11/F12,
+;;  window management, web search, clipboard tagging, Alt+Tab switcher panel.
+;; ============================================================================
+
+(defcfg
+  process-unmapped-keys yes
+)
+
+(defsrc
+  grv  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lmet lalt spc  ralt rmet menu rctl
+  f1
+  home end  pgup pgdn up   down left rght del
+)
+
+(defalias
+  ;; Editing shortcuts
+  undo   (multi lctl z)
+  redo   (multi lctl y)
+  cut    (multi lctl x)
+  copy   (multi lctl c)
+  paste  (multi lctl v)
+  save   (multi lctl s)
+  find   (multi lctl f)
+  wleft  (multi lctl left)
+  wright (multi lctl rght)
+  wbs    (multi lctl bspc)
+  wdel   (multi lctl del)
+  chome  (multi lctl home)
+  cend   (multi lctl end)
+  cpgup  (multi lctl pgup)
+  cpgdn  (multi lctl pgdn)
+  altab  (multi lalt tab)
+  ;; Single-press line and word actions (AHK HandleLineAction / HandleWordAction tap)
+  delline  (macro home 50 home 50 S-end 50 del)
+  copyword (macro C-left 50 C-S-rght 50 C-c)
+  ;; Text surround with no Space held (AHK TextUtils.SurroundSelection)
+  paren  (macro S-9 S-0 left)
+  squote (macro ' ' left)
+  dquote (macro S-' S-' left)
+  brack  (macro [ ] left)
+  brace  (macro S-[ S-] left)
+  ;; Smart Enter without Space (AHK TextUtils.SmartEnter)
+  smartent (macro end ret)
+  ;; Confirm layer active for 1.5 s; the next key press (Q) ends it
+  confirm  (one-shot 1500 (layer-while-held confirm))
+  closewin (multi lalt f4)
+  ;; Select all, then act (confirm layer, CapsLock+W)
+  selcut   (macro C-a 50 C-x)
+  selcopy  (macro C-a 50 C-c)
+  seldel   (macro C-a 50 del)
+)
+
+;; Base layer must stay first: Kanata starts in the first deflayermap.
+;; Base layer: plain keys. Only CapsLock and RAlt are changed.
+(deflayermap (base)
+  caps (layer-while-held nav)
+  ralt rctl
+  ;; Single tap = Right Shift; double tap = Caps Lock toggle (normal key press, no cmd)
+  rsft (tap-dance 200 (rsft caps))
+)
+
+;; Nav layer, held with CapsLock. Keys not listed fall through to base.
+(deflayermap (nav)
+  ;; Left hand
+  q    esc
+  w    @confirm    ;; CapsLock+W: confirm layer for 1.5 s, or until next key press
+  e    @undo
+  r    @redo
+  t    @copyword
+  a    @save
+  s    @cut
+  d    @copy
+  f    @paste
+  g    @delline
+  z    @altab
+  x    @find
+  c    ret
+  v    del
+  b    bspc
+  ;; Right hand
+  y    home
+  u    pgup
+  i    up
+  o    pgdn
+  p    end
+  h    @wleft
+  j    left
+  k    down
+  l    rght
+  ;    @wright
+  n    bspc
+  m    @wbs
+  ,    del
+  .    @wdel
+  /    ret
+  [    @brack
+  ]    @brace
+  '    @dquote
+  ;; Top row
+  1    menu
+  2    F2
+  3    =
+  4    XX
+  5    @chome
+  6    @cend
+  7    pgup
+  8    pgdn
+  9    @paren
+  0    @squote
+  -    S--
+  =    S-=
+  bspc (multi lctl bspc)
+  ret  @smartent
+  ;; Tab held = Shift
+  tab  lsft
+  ;; Space held does nothing (AHK: CapsLock & Space::return)
+  spc  XX
+  f1   menu
+)
+
+;; Confirm layer (entered with CapsLock+W): Q closes the window; any other key cancels.
+(deflayermap (confirm)
+  q    @closewin
+  s    @selcut
+  d    @selcopy
+  f    @seldel
+)
