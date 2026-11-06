@@ -133,7 +133,7 @@
 ;; Window layer, entered by CapsLock+W: E = task view (Win+Tab), F closes the window (Alt+F4).
 (deflayermap (winact)
   e    @taskview
-  f    @closewin
+  q    @closewin
 )
 
 ;; Selection layer, entered by CapsLock+G/T: S = cut, D = copy, F = delete the selection.
