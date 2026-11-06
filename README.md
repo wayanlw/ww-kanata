@@ -25,7 +25,6 @@ Hold **CapsLock** for the nav layer, then press the key. Exceptions are noted in
 
 ### Deleting and new lines
 
-- `C`: New line. (Enter).
 - `/`: New line. (Enter).
 - `V`: Delete character forward. (Delete).
 - `,`: Delete character forward. (Delete).
@@ -33,7 +32,7 @@ Hold **CapsLock** for the nav layer, then press the key. Exceptions are noted in
 - `N`: Delete character back. (Backspace).
 - `M`: Delete word back. (Ctrl+Backspace).
 - `.`: Delete word forward. (Ctrl+Delete).
-- `G`: Delete line. (Home, Home, Shift+End, Delete).
+- `4`: Delete line. (Home, Home, Shift+End, Delete).
 - `Enter`: Smart new line. (End, Enter).
 
 ### Clipboard and editing
@@ -45,7 +44,15 @@ Hold **CapsLock** for the nav layer, then press the key. Exceptions are noted in
 - `F`: Paste. (Ctrl+V).
 - `A`: Save. (Ctrl+S).
 - `X`: Find. (Ctrl+F).
-- `T`: Copy word under cursor. (Ctrl+Left, Ctrl+Shift+Right, Ctrl+C).
+### Selection
+
+- `G`: Select all, then opens the S/D/F layer. (Ctrl+A).
+- `T`: Select to end. (Shift+End). Double-tap: select to start. (Shift+Home). Each opens the S/D/F layer.
+  - `S`: Cut the selection. (Ctrl+X).
+  - `D`: Copy the selection. (Ctrl+C).
+  - `F`: Delete the selection. (Delete).
+
+The S/D/F layer lasts 1.5 seconds, or until the next key press.
 
 ### Surround
 
@@ -55,13 +62,11 @@ Hold **CapsLock** for the nav layer, then press the key. Exceptions are noted in
 - `[`: Insert brackets, cursor inside. (`[ ]`).
 - `]`: Insert braces, cursor inside. (`{ }`).
 
-### Confirm layer
+### Window layer
 
-- `W`: Opens the confirm layer for 1.5 seconds, or until the next key press. Any key other than those below cancels it.
-  - `Q`: Close window. (Alt+F4).
-  - `S`: Select all, then cut. (Ctrl+A, Ctrl+X).
-  - `D`: Select all, then copy. (Ctrl+A, Ctrl+C).
-  - `F`: Select all, then delete. (Ctrl+A, Delete).
+- `W`: Opens the window layer for 1.5 seconds, or until the next key press. Any key other than those below cancels it.
+  - `E`: Task view. (Win+Tab).
+  - `F`: Close window. (Alt+F4).
 
 ### Caps Lock toggle
 
@@ -73,14 +78,13 @@ Hold **CapsLock** for the nav layer, then press the key. Exceptions are noted in
 - `Q`: Escape. (Esc).
 - `1`: Context menu. (Menu key).
 - `F1`: Context menu. (Menu key).
+- `Space`: Enter. (Enter).
 - `2`: Rename. (F2).
 - `3`: Equals sign. (`=`).
 - `-`: Underscore. (Shift+-).
 - `=`: Plus sign. (Shift+=).
 - `Backspace`: Delete word back. (Ctrl+Backspace).
-- `Tab` (held, not CapsLock): Hold for Shift. (Shift).
-- `RAlt` (not CapsLock): Right Alt acts as Right Ctrl. (RCtrl).
-
+- `Tab` (with CapsLock held): Shift. (Shift).
 Holding Shift with a nav key is not verified.
 
 ## Requirements

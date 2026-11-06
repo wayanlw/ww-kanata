@@ -4,8 +4,8 @@
 ;;  Emergency exit: hold LCtrl + Space + Esc (physical keys).
 ;;  Hold CapsLock = nav layer.
 ;;  Excel-only AHK hotkeys are not ported (excluded by design).
-;;  Not ported yet: CapsLock+T/G/A multi-press (tap only for now),
-;;  CapsLock+A double-press save-as, CapsLock+W launcher,
+;;  Not ported yet: CapsLock+A multi-press (double-press save-as),
+;;  CapsLock+W launcher,
 ;;  CapsLock+Home/End line duplication, Win+Space, CapsLock+F11/F12,
 ;;  window management, web search, clipboard tagging, Alt+Tab switcher panel.
 ;; ============================================================================
@@ -42,9 +42,17 @@
   cpgup  (multi lctl pgup)
   cpgdn  (multi lctl pgdn)
   altab  (multi lalt tab)
-  ;; Single-press line and word actions (AHK HandleLineAction / HandleWordAction tap)
+  ;; Single-press line action (AHK HandleLineAction tap)
   delline  (macro home 50 home 50 S-end 50 del)
-  copyword (macro C-left 50 C-S-rght 50 C-c)
+  ;; Selection: CapsLock+G = select all; CapsLock+T = select to end (double tap: select to start).
+  ;; Then S/D/F = cut/copy/delete the selection. Layer lasts 1.5 s or until the next key.
+  selall   (multi lctl a (one-shot 1500 (layer-while-held selact)))
+  selrgt   (multi lsft end (one-shot 1500 (layer-while-held selact)))
+  selhm    (multi lsft home (one-shot 1500 (layer-while-held selact)))
+  ;; CapsLock+W opens the window layer for 1.5 s or until the next key; F closes the window
+  winact   (one-shot 1500 (layer-while-held winact))
+  closewin (multi lalt f4)
+  taskview (multi lmet tab)
   ;; Text surround with no Space held (AHK TextUtils.SurroundSelection)
   paren  (macro S-9 S-0 left)
   squote (macro ' ' left)
@@ -53,20 +61,12 @@
   brace  (macro S-[ S-] left)
   ;; Smart Enter without Space (AHK TextUtils.SmartEnter)
   smartent (macro end ret)
-  ;; Confirm layer active for 1.5 s; the next key press (Q) ends it
-  confirm  (one-shot 1500 (layer-while-held confirm))
-  closewin (multi lalt f4)
-  ;; Select all, then act (confirm layer, CapsLock+W)
-  selcut   (macro C-a 50 C-x)
-  selcopy  (macro C-a 50 C-c)
-  seldel   (macro C-a 50 del)
 )
 
 ;; Base layer must stay first: Kanata starts in the first deflayermap.
 ;; Base layer: plain keys. Only CapsLock and RAlt are changed.
 (deflayermap (base)
   caps (layer-while-held nav)
-  ralt rctl
   ;; Single tap = Right Shift; double tap = Caps Lock toggle (normal key press, no cmd)
   rsft (tap-dance 200 (rsft caps))
 )
@@ -75,18 +75,18 @@
 (deflayermap (nav)
   ;; Left hand
   q    esc
-  w    @confirm    ;; CapsLock+W: confirm layer for 1.5 s, or until next key press
+  w    @winact     ;; CapsLock+W: window layer; then F closes the window
   e    @undo
   r    @redo
-  t    @copyword
+  t    (tap-dance 200 (@selrgt @selhm))  ;; CapsLock+T tap = select to end; double tap = select to start
   a    @save
   s    @cut
   d    @copy
   f    @paste
-  g    @delline
+  g    @selall     ;; CapsLock+G: select all, then S/D/F act on the selection
   z    @altab
   x    @find
-  c    ret
+  c    XX
   v    del
   b    bspc
   ;; Right hand
@@ -112,7 +112,7 @@
   1    menu
   2    F2
   3    =
-  4    XX
+  4    @delline
   5    @chome
   6    @cend
   7    pgup
@@ -125,15 +125,20 @@
   ret  @smartent
   ;; Tab held = Shift
   tab  lsft
-  ;; Space held does nothing (AHK: CapsLock & Space::return)
-  spc  XX
+  ;; Space = Enter (AHK had no binding here; user request)
+  spc  ret
   f1   menu
 )
 
-;; Confirm layer (entered with CapsLock+W): Q closes the window; any other key cancels.
-(deflayermap (confirm)
-  q    @closewin
-  s    @selcut
-  d    @selcopy
-  f    @seldel
+;; Window layer, entered by CapsLock+W: E = task view (Win+Tab), F closes the window (Alt+F4).
+(deflayermap (winact)
+  e    @taskview
+  f    @closewin
+)
+
+;; Selection layer, entered by CapsLock+G/T: S = cut, D = copy, F = delete the selection.
+(deflayermap (selact)
+  s    @cut
+  d    @copy
+  f    del
 )
